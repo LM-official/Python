@@ -108,11 +108,22 @@ if __name__ == '__main__':
         # and 4300 is the limit of the convertion by default))
 
     # MY RESULTS (with i7-9700)
-    # first 20 perfect number computed in ~ 40 seconds
-    # first 21 perfect number computed in ~ 12 minutes
-    # first 22 perfect number computed in ~ 13 minutes
-    # first 23 perfect number computed in ~ 20 minutes
-    # first 24 perfect number not computed yet
+    # first 20 perfect number computed in ~ 40 seconds (prime number: 4423)
+    
+    # first 21 perfect number computed in ~ 12 minutes (prime number: 9689)
+    # the 21th perfect number computed in ~ 11 minutes (prime number: 9689) (start searching from 4423)
+    
+    # first 22 perfect number computed in ~ 13 minutes (prime number: 9941)
+    # the 22th perfect number computed in ~ 74 seconds (prime number: 9941) (start searching from 9689)
+    
+    # first 23 perfect number computed in ~ 20 minutes (prime number: 11213)
+    # the 23th perfect number computed in ~ 7 minutes (prime number: 11213) (start searching from 9941)
+    
+    # the 24th perfect number computed in ~ 2 hours and 40 minutes (prime number: 19937) (start searching from 11213)
+    
+    # the 25th perfect number computed in ~ 1 hour (prime number: 21701) (start searching from 19937)
+    
+    # the 26th perfect number not computed yet (start searching from 21701)
     
 # %% ::::::::::::::::::::::::::::::::::::::::::::::: POSSIBILE UPGRADES ::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
 
