@@ -36,25 +36,26 @@ from sympy import isprime
 MAX_DIGITS = 4300 # the limit for integer string conversion (standard: 4300 digits)
 
 # %% :::::::::::::::::::::::::::::::::::::::::::: FUNCTION 1 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
-# returns the list of the first n-th perfect numbers
-def n_perfect_numbers(n_values: int) -> list[int]:
+# returns the list of the first n-th perfect numbers and the prime numbers that generate them
+def n_perfect_numbers(n_values: int, prime_start: int = 1) -> tuple[list[int], list[int]]:
     time_start = time.time()
     perfect_numbers = list()
+    prime_perfect = list()
     
-    n = 1
     while True:
-        n += 1
+        prime_start += 1
         
-        mersenne = 2**n-1 # calculate Mersenne's number
+        mersenne = 2**prime_start-1 # calculate Mersenne's number
         if not isprime(mersenne): continue # avoid useless computation
         
-        perfect_number = 2**(n-1)*mersenne # valid <=> Mersenne's number is prime
+        perfect_number = 2**(prime_start-1)*mersenne # valid <=> Mersenne's number is prime
         perfect_numbers.append(perfect_number)
+        prime_perfect.append(prime_start)
         
         if len(perfect_numbers) >= n_values: break # ends the loop
 
-    print(f"execution time: {time.time()-time_start}sec.\n\n")
-    return perfect_numbers
+    print(f"execution time: {time.time()-time_start}sec.\n")
+    return (perfect_numbers, prime_perfect)
 
     
     
@@ -70,9 +71,10 @@ def print_perfect_number_list(number_list: list[int]) -> None:
 
        # n blocks with MAX_DIGITS digits + 1 block with less than MAX_DIGITS digits
        digits = (len(decomposed_number)-1)*MAX_DIGITS + len(decomposed_number[0])
-       print(f"\n{index+1}° ({digits} digits)")
+       print(f"{index+1}° ({digits} digits)")
 
        for part in decomposed_number: print(part)
+       print("")
     
    
 # %% :::::::::::::::::::::::::::::::::::::::::::: FUNCTION 2 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
@@ -95,8 +97,9 @@ if __name__ == '__main__':
         try: list_lenght = int(input("how many perfect numbers to search for? "))
         except ValueError: print("Invalid input, enter a valid number")
         
-    number_list = n_perfect_numbers(list_lenght)
-    print_perfect_number_list(number_list)
+    perfect_list, prime_list = n_perfect_numbers(list_lenght)
+    print(f"prime numbers that generate the perfect numbers: {prime_list}")
+    print_perfect_number_list(perfect_list)
     
     # with this program you could find the first 38 perfect number, the limits are:
         # - the computation time
