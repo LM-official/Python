@@ -33,31 +33,13 @@ from sympy import isprime
 # For large numbers, isprime() uses probabilistic algorithms, such as the Miller-Rabin test, which may return a false positive.
 # These algorithms minimize the chance of error, if the test returns True, the probability that the number is not prime is extremely low.
 
+MAX_DIGITS = 4300 # the limit for integer string conversion (standard: 4300 digits)
+
 # %% :::::::::::::::::::::::::::::::::::::::::::: FUNCTION 1 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
-# returns the list of perfect numbers in the range
-'''def perfect_number_in_range(max_range):
-    time_start = time.time()
-    perfect_numbers = []
-    
-    for n in range(2, max_range+1):
-        mersenne = 2**n-1 # calculate Mersenne's number
-        if mersenne > max_range: break # avoid useless loops
-        if not isprime(mersenne): continue # avoid useless computation
-        
-        perfect_number = 2**(n-1)*mersenne # valid <=> Mersenne's number is prime
-        if perfect_number > max_range: break # avoid useless loops
-        perfect_numbers.append(perfect_number)
-
-    print(f"execution time: {time.time()-time_start}sec.\n\n")
-    return perfect_numbers'''
-
-
-
-# %% :::::::::::::::::::::::::::::::::::::::::::: FUNCTION 2 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
 # returns the list of the first n-th perfect numbers
-def n_perfect_numbers(n_values):
+def n_perfect_numbers(n_values: int) -> list[int]:
     time_start = time.time()
-    perfect_numbers = []
+    perfect_numbers = list()
     
     n = 1
     while True:
@@ -78,42 +60,42 @@ def n_perfect_numbers(n_values):
     
 # %% :::::::::::::::::::::::::::::::::::::::::::: FUNCTION 3 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
 # print the list of perfect numbers
-def print_perfect_number_list(number_list):
+def print_perfect_number_list(number_list: list[int]) -> None:
    print("perfect number found:")
-   #for index, number in enumerate(number_list): print(f"{index+1}° ({len(str(number))} digits)\n{number}\n")
    
    # 21th perfect number: ValueError: Exceeds the limit (4300 digits) for integer string conversion
    # upgraded code for perfect numbers > 20th perfect number
    for index, number in enumerate(number_list):
        decomposed_number = decomposer(number)
-       
-       # n blocks with 4300 digits + 1 block with less than 4300 digits
-       digits = (len(decomposed_number)-1)*4300 + len(str(decomposed_number[len(decomposed_number)-1]))
+
+       # n blocks with MAX_DIGITS digits + 1 block with less than MAX_DIGITS digits
+       digits = (len(decomposed_number)-1)*MAX_DIGITS + len(decomposed_number[0])
        print(f"\n{index+1}° ({digits} digits)")
 
        for part in decomposed_number: print(part)
     
    
-# %% :::::::::::::::::::::::::::::::::::::::::::: FUNCTION 4 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
+# %% :::::::::::::::::::::::::::::::::::::::::::: FUNCTION 2 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
 # decompose a number with more than max_digits digits into blocks with less than max_digits digits
-def decomposer(number, max_digits=4300):
+def decomposer(number: int, max_digits: int = MAX_DIGITS) -> list[str]:
     block_size = 10**max_digits
     
     # base case
-    if number < block_size: return [number]
+    if number <= block_size: return [str(number)]
     
-    block = number // block_size # take the first max_digits digits
-    rest = number % block_size # the rest of the number
+    block = str(number % block_size).zfill(max_digits) # take the last max_digits digits
+    # if there were leading zeros they would be lost, zfill() adds them back, adjusting the block size
+    rest = number // block_size # the rest of the number
     
-    return [block] + decomposer(rest, max_digits)
+    return decomposer(rest) + [block]
 # %% :::::::::::::::::::::::::::::::::::::::::::::::::::::: TESTS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
 if __name__ == '__main__':
-    '''max_range = int(input("searching range [1-x]⊆N, x:"))
-    number_list = perfect_number_in_range(max_range)'''
-    
-    list_lenght = int(input("how many perfect numbers to search for? "))
+    list_lenght = 0
+    while list_lenght < 1:
+        try: list_lenght = int(input("how many perfect numbers to search for? "))
+        except ValueError: print("Invalid input, enter a valid number")
+        
     number_list = n_perfect_numbers(list_lenght)
-    
     print_perfect_number_list(number_list)
     
     # with this program you could find the first 38 perfect number, the limits are:
@@ -131,7 +113,13 @@ if __name__ == '__main__':
     
 # %% ::::::::::::::::::::::::::::::::::::::::::::::: POSSIBILE UPGRADES ::::::::::::::::::::::::::::::::::::::::::::::::::::::: #
 
-# better algorithm for moltiplication (harvey hoeven algorithm)     https://en.wikipedia.org/wiki/Multiplication_algorithm
+# ̶b̶e̶t̶t̶e̶r̶ ̶a̶l̶g̶o̶r̶i̶t̶h̶m̶ ̶f̶o̶r̶ ̶m̶o̶l̶t̶i̶p̶l̶i̶c̶a̶t̶i̶o̶n̶ ̶(̶h̶a̶r̶v̶e̶y̶ ̶h̶o̶e̶v̶e̶n̶ ̶a̶l̶g̶o̶r̶i̶t̶h̶m̶)̶ ̶ ̶ ̶ ̶ ̶h̶t̶t̶p̶s̶:̶/̶/̶e̶n̶.̶w̶i̶k̶i̶p̶e̶d̶i̶a̶.̶o̶r̶g̶/̶w̶i̶k̶i̶/̶M̶u̶l̶t̶i̶p̶l̶i̶c̶a̶t̶i̶o̶n̶_̶a̶l̶g̶o̶r̶i̶t̶h̶m̶
+# No, Python switch automatically to better algorithm for non galactic number (too big numbers)
+# (Karatsuba            https://en.wikipedia.org/wiki/Karatsuba_algorithm, 
+# Toom-Cook             https://en.wikipedia.org/wiki/Toom%E2%80%93Cook_multiplication and
+# Schönhage-Strassen    https://en.wikipedia.org/wiki/Sch%C3%B6nhage%E2%80%93Strassen_algorithm)
+
+
 # use multiprocessing for computing
 # increment the maximum depth of recursion
-# increment the maximum limit for integer string conversion
+# increment the maximum limit for integer string conversion (sys.set_int_max_str_digits() to increase the limit)
